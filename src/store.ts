@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import todos from "./reducers/todos/index.ts";
+import assignees from "./reducers/assignees/index.ts";
 
 const store = configureStore({
     reducer: {
         todos,
+        assignees
     },
 });
 

@@ -1,10 +1,15 @@
 import { useState, type FormEvent } from "react";
 import { useDispatch } from "react-redux";
 import { addTodo } from "../../reducers/todos";
-import type { TodoStatus } from "../../types";
+import type { Assignee, TodoStatus } from "../../types";
 
-const TodosForm = () => {
+type Props = {
+  assignees: Assignee[];
+};
+
+const TodosForm = ({ assignees }: Props) => {
   const [inputText, setInputText] = useState<string>("");
+  const [selectedAssignee, setSelectedAssignee] = useState<string>("");
   // we use dispatch to trigger the reducer.
   const dispatch = useDispatch();
 
@@ -13,13 +18,14 @@ const TodosForm = () => {
     dispatch(
       addTodo({
         id: crypto.randomUUID(),
-        // we set pending as the initial TODO state.
+        assigneeId: selectedAssignee,
         status: "pending" as TodoStatus,
         text: inputText,
       })
     );
     // after we update the state, clean the input
     setInputText('')
+    setSelectedAssignee('')
   };
 
   return (
@@ -32,6 +38,18 @@ const TodosForm = () => {
           placeholder="Escribe una nueva tarea..."
           className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         />
+        <select
+          className="px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          value={selectedAssignee}
+          onChange={(e) => setSelectedAssignee(e.target.value)}
+        >
+          <option value="" disabled selected>Asignar a...</option>
+          {assignees.map((assignee) => (
+            <option key={assignee.id} value={assignee.id}>
+              {assignee.name}
+            </option>
+          ))}
+        </select>
         <button
           type="submit"
           className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"

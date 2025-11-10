@@ -1,3 +1,4 @@
+import { useAssigneeForTodo } from "../../hooks/use-get-assignee";
 import type { Todo } from "../../types";
 import { mappedStatusColor, mappedStatusText } from "../../utils/todos";
 
@@ -7,10 +8,15 @@ interface TodosCardProps {
   onStateChange?: (id: string, status: string) => void;
 }
 
+const TodosCard = ({
+  todo,
+  onRemove,
+  onStateChange,
+}: TodosCardProps) => {
+  const statusColor = mappedStatusColor[todo.status];
+  const statusText = mappedStatusText[todo.status];
 
-const TodosCard = ({ todo, onRemove, onStateChange }: TodosCardProps) => {
-  const statusColor = mappedStatusColor[todo.status]
-  const statusText = mappedStatusText[todo.status]
+  const assignee = useAssigneeForTodo(todo.id);
   return (
     <div className="flex items-center justify-between gap-4">
       <div className="flex-1">
@@ -20,6 +26,11 @@ const TodosCard = ({ todo, onRemove, onStateChange }: TodosCardProps) => {
         >
           {statusText}
         </span>
+        {assignee && (
+          <span className={`inline-block px-3 py-1 text-xs font-semibold`}>
+            Asignado a: {assignee.name}
+          </span>
+        )}
       </div>
       <button
         onClick={() => onRemove(todo.id)}

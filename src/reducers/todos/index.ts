@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { AddTodoPayload, DeleteTodoPayload, TodosState, UpdateTodoStatusPayload } from "../../types";
+import { removeAssignee } from "../assignees";
 
 const sliceName = 'todos';
 
@@ -13,7 +14,7 @@ export const todosSlice = createSlice({
     reducers: {
         addTodo: (state, action: AddTodoPayload) => {
             // add the new todo to the items array
-            state.items.push(action.payload);
+            state.items.unshift(action.payload);
         },
         removeTodo: (state, action: DeleteTodoPayload) => {
             // filter out the todo with the given id
@@ -27,7 +28,15 @@ export const todosSlice = createSlice({
                 todo.status = status;
             }
         }
-    }
+    },
+    extraReducers(builder) {
+        // after deleting an assignee, remove all todos assigned to that person
+        builder.addCase(removeAssignee, (state, action) => {
+            const removedAssigneeId = action.payload.id;
+            state.items = state.items.filter(todo => todo.assigneeId !== removedAssigneeId);
+            
+        });
+    },
 })
 
 export const { addTodo, removeTodo, updateTodoStatus } = todosSlice.actions;
