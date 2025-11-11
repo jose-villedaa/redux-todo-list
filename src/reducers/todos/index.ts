@@ -17,8 +17,11 @@ export const todosSlice = createSlice({
             state.items.unshift(action.payload);
         },
         removeTodo: (state, action: DeleteTodoPayload) => {
-            // filter out the todo with the given id
-            state.items = state.items.filter(todo => todo.id !== action.payload.id);
+            const index = state.items.findIndex(todo => todo.id === action.payload.id);
+            // remove the todo if found
+            if (index !== -1) {
+                state.items.splice(index, 1);
+            }
         },
         updateTodoStatus: (state, action: UpdateTodoStatusPayload) => {
             const { id, status } = action.payload;
@@ -32,9 +35,12 @@ export const todosSlice = createSlice({
     extraReducers(builder) {
         // after deleting an assignee, remove all todos assigned to that person
         builder.addCase(removeAssignee, (state, action) => {
-            const removedAssigneeId = action.payload.id;
-            state.items = state.items.filter(todo => todo.assigneeId !== removedAssigneeId);
-            
+            const assigneeId = action.payload.id;
+            for(const task of state.items) {
+                if (task.assigneeId === assigneeId) {
+                    task.assigneeId = '';
+                }
+            }
         });
     },
 })

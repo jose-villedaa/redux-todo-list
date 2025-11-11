@@ -23,11 +23,14 @@ export const assigneeSlice = createSlice({
     reducers: {
         addAssignee: (state, action: AddAssigneePayload) => {
             // add the new todo to the items array
-            state.items.push(action.payload);
+            state.items.unshift(action.payload);
         },
         removeAssignee: (state, action: DeleteAssigneePayload) => {
             // filter out the todo with the given id
-            state.items = state.items.filter(assignee => assignee.id !== action.payload.id);
+            const index = state.items.findIndex(assignee => assignee.id === action.payload.id);
+            if (index !== -1) {
+                state.items.splice(index, 1);
+            }
         }
     },
 })
